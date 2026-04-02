@@ -1,0 +1,31 @@
+.stock-widget {
+  padding: 1rem;
+  max-width: 800px;
+}
+.toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+input {
+  min-width: 220px;
+  padding: 0.5rem;
+}
+button {
+  padding: 0.5rem 0.75rem;
+  cursor: pointer;
+}
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+th,
+td {
+  padding: 0.75rem;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+.status {
+  margin: 0.5rem 0 1rem;
+}

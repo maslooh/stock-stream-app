@@ -1,0 +1,31 @@
+<section class="stock-widget">
+  <!-- <table *ngIf="rows().length; else empty">
+    <thead>
+      <tr>
+        <th>Symbol</th>
+        <th>Price</th>
+        <th>Volume</th>
+        <th>Updated</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let row of rows()">
+        <td>{{ row.symbol }}</td>
+        <td>{{ row.price | number: "1.2-2" }}</td>
+        <td>{{ row.volume }}</td>
+        <td>{{ row.updatedAt }}</td>
+        <td>
+          <button type="button" (click)="removeSymbol(row.symbol)">
+            Remove
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table> -->
+  
+
+  <ng-template #empty>
+    <p>No subscribed symbols yet.</p>
+  </ng-template>
+</section>
