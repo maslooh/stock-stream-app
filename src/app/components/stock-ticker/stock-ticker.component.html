@@ -1,31 +1,50 @@
-<section class="stock-widget">
-  <!-- <table *ngIf="rows().length; else empty">
-    <thead>
-      <tr>
-        <th>Symbol</th>
-        <th>Price</th>
-        <th>Volume</th>
-        <th>Updated</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr *ngFor="let row of rows()">
-        <td>{{ row.symbol }}</td>
-        <td>{{ row.price | number: "1.2-2" }}</td>
-        <td>{{ row.volume }}</td>
-        <td>{{ row.updatedAt }}</td>
-        <td>
-          <button type="button" (click)="removeSymbol(row.symbol)">
-            Remove
-          </button>
-        </td>
-      </tr>
-    </tbody>
-  </table> -->
-  
+<div class="cards-grid">
+  <div
+    class="card"
+    *ngFor="let card of cards()"
+    [class.is-on]="card.isOn"
+    [class.is-positive]="card.isPositive"
+    [class.is-negative]="!card.isPositive"
+  >
+    <div class="symbol">{{ card.symbol }}</div>
+    <div class="name">{{ card.name }}</div>
+    <div class="price">${{ card.price | number: "1.2-2" }}</div>
 
-  <ng-template #empty>
-    <p>No subscribed symbols yet.</p>
-  </ng-template>
-</section>
+    <div class="change-info">
+      <div>{{ card.change > 0 ? '+' : '' }}{{ card.change | number: "1.2-2" }}</div>
+      <div>({{ card.change < 0 ? '-' : '' }}{{ card.changePercent | number: "1.2-2" }}%)</div>
+    </div>
+
+    <div class="metrics-grid">
+      <div class="metric">
+        <span class="label">Daily high price:</span>
+        <span class="value">${{ card.dailyHigh | number: '1.2-2' }}</span>
+      </div>
+      <div class="metric">
+        <span class="label">Daily low price:</span>
+        <span class="value">${{ card.dailyLow | number: '1.2-2' }}</span>
+      </div>
+      <div class="metric">
+        <span class="label">52-week high price:</span>
+        <span class="value">${{ card.week52High | number: '1.2-2' }}</span>
+      </div>
+      <div class="metric">
+        <span class="label">52-week low price:</span>
+        <span class="value">${{ card.week52Low | number: '1.2-2' }}</span>
+      </div>
+    </div>
+
+    <div class="footer-info">
+      <div class="trade-time">Last Trade: {{ card.lastTrade }}</div>
+      <div class="vol-info">Vol: {{ card.volume }}</div>
+    </div>
+
+    <div class="toggle-container" (click)="toggleSymbol(card.symbol)">
+      <div class="toggle-track" [class.on]="card.isOn">
+        <span class="toggle-text" *ngIf="card.isOn">ON</span>
+        <div class="toggle-thumb"></div>
+        <span class="toggle-text" *ngIf="!card.isOn">OFF</span>
+      </div>
+    </div>
+  </div>
+</div>

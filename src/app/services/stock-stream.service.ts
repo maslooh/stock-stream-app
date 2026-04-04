@@ -10,7 +10,8 @@ import {
   ConnectionState,
   FinnhubTrade,
   FinnhubTradeMessage,
-  StockPriceState
+  StockPriceState,
+  StaticStockInfo
 } from '../interfaces/stock-stream.interface';
 
 @Injectable({ providedIn: 'root' })
@@ -31,6 +32,9 @@ export class StockStreamService {
 
   private readonly _prices: WritableSignal<Record<string, StockPriceState>> = signal({});
   readonly prices = this._prices.asReadonly();
+
+  private readonly _staticInfo: WritableSignal<Record<string, StaticStockInfo>> = signal({});
+  readonly staticInfo = this._staticInfo.asReadonly();
 
   readonly hasConnection = computed(() => this.connectionState() === 'connected');
 
@@ -106,6 +110,8 @@ export class StockStreamService {
     const normalized = symbol.trim().toUpperCase();
     if (!normalized) return;
 
+    this.loadStaticInfo(normalized);
+
     const current = this._trackedSymbols();
     if (!current.includes(normalized)) {
       this._trackedSymbols.set([...current, normalized]);
@@ -144,6 +150,7 @@ export class StockStreamService {
 
     this._trackedSymbols.set([]);
     this._prices.set({});
+    this._staticInfo.set({});
   }
 
   priceFor(symbol: string) {
@@ -193,4 +200,34 @@ export class StockStreamService {
       this.connect();
     }, delay);
   }
-}
+
+  private async loadStaticInfo(symbol: string): Promise<void> {
+    if (this._staticInfo()[symbol]) return;
+
+    try {
+      const [profileRes, quoteRes, metricRes] = await Promise.all([
+        fetch(`https://finnhub.io/api/v1/stock/profile2?symbol=${symbol}&token=${this.apiKey}`),
+        fetch(`https://finnhub.io/api/v1/quote?symbol=${symbol}&token=${this.apiKey}`),
+        fetch(`https://finnhub.io/api/v1/stock/metric?symbol=${symbol}&metric=all&token=${this.apiKey}`)
+      ]);
+
+      const profile = await profileRes.json();
+      const quote = await quoteRes.json();
+      const metricData = await metricRes.json();
+      const metrics = metricData.metric || {};
+
+      this._staticInfo.update(current => ({
+        ...current,
+        [symbol]: {
+          name: profile.name || symbol,
+          dailyHigh: quote.h || 0,
+          dailyLow: quote.l || 0,
+          fiftyTwoWeekHigh: metrics['52WeekHigh'] || 0,
+          fiftyTwoWeekLow: metrics['52WeekLow'] || 0
+        }
+      }));
+    } catch (e) {
+      console.error('Failure fetching static data for', symbol, e);
+    }
+  }
+}

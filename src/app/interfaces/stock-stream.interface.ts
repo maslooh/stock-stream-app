@@ -20,3 +20,11 @@ export interface StockPriceState {
   timestamp: number;
   updatedAt: string;
 }
+
+export interface StaticStockInfo {
+  name: string;
+  dailyHigh: number;
+  dailyLow: number;
+  fiftyTwoWeekHigh: number;
+  fiftyTwoWeekLow: number;
+}
