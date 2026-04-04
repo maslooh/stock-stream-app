@@ -6,14 +6,14 @@
     [class.is-positive]="card.isPositive"
     [class.is-negative]="!card.isPositive"
   >
-    <div class="symbol">{{ card.symbol }}</div>
+    <div class="symbol hide-on-mobile">{{ card.symbol }}</div>
     <div class="name">{{ card.name }}</div>
     <div class="price">${{ card.price | number: "1.2-2" }}</div>
 
-    <div class="change-info">
+    <!-- <div class="change-info hide-on-mobile">
       <div>{{ card.change > 0 ? '+' : '' }}{{ card.change | number: "1.2-2" }}</div>
       <div>({{ card.change < 0 ? '-' : '' }}{{ card.changePercent | number: "1.2-2" }}%)</div>
-    </div>
+    </div> -->
 
     <div class="metrics-grid">
       <div class="metric">
@@ -24,17 +24,17 @@
         <span class="label">Daily low price:</span>
         <span class="value">${{ card.dailyLow | number: '1.2-2' }}</span>
       </div>
-      <div class="metric">
+      <div class="metric hide-on-mobile">
         <span class="label">52-week high price:</span>
         <span class="value">${{ card.week52High | number: '1.2-2' }}</span>
       </div>
-      <div class="metric">
+      <div class="metric hide-on-mobile">
         <span class="label">52-week low price:</span>
         <span class="value">${{ card.week52Low | number: '1.2-2' }}</span>
       </div>
     </div>
 
-    <div class="footer-info">
+    <div class="footer-info hide-on-mobile">
       <div class="trade-time">Last Trade: {{ card.lastTrade }}</div>
       <div class="vol-info">Vol: {{ card.volume }}</div>
     </div>
