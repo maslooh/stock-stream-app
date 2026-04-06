@@ -40,13 +40,20 @@ export class StockTickerComponent {
     'AMZN',
   ]);
 
+  private readonly _lastLiveData = new Map<string, any>();
+
   readonly cards = computed(() => {
     const prices = this.stream.prices();
     const staticInfo = this.stream.staticInfo();
     const activeSymbols = this._symbols();
 
     return this.allSymbols.map((symbol) => {
-      const liveData = prices[symbol];
+      const currentLiveData = prices[symbol];
+      if (currentLiveData) {
+        this._lastLiveData.set(symbol, currentLiveData);
+      }
+
+      const liveData = currentLiveData || this._lastLiveData.get(symbol);
       const staticData = staticInfo[symbol];
       const baseline = this.initialData.get(symbol)!;
       const isOn = activeSymbols.includes(symbol);
@@ -60,7 +67,9 @@ export class StockTickerComponent {
       }
 
       const isPositive = displayChange >= 0;
-      const changePercent = baseline.price ? (Math.abs(displayChange) / baseline.price) * 100 : 0;
+      const changePercent = baseline.price
+        ? (Math.abs(displayChange) / baseline.price) * 100
+        : 0;
 
       return {
         symbol,
@@ -70,9 +79,7 @@ export class StockTickerComponent {
         changePercent,
         isPositive,
         isOn,
-        volume: liveData
-          ? liveData.volume
-          : Math.floor(Math.random() * 5000 + 1000),
+        volume: liveData ? liveData.volume : '-',
         lastTrade: liveData ? liveData.updatedAt : '-',
         dailyHigh: staticData?.dailyHigh || 0,
         dailyLow: staticData?.dailyLow || 0,
