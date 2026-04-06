@@ -49,26 +49,36 @@ export class StockTickerComponent {
 
     return this.allSymbols.map((symbol) => {
       const currentLiveData = prices[symbol];
+      let cachedData = this._lastLiveData.get(symbol);
+
       if (currentLiveData) {
-        this._lastLiveData.set(symbol, currentLiveData);
+        if (!cachedData || cachedData.timestamp !== currentLiveData.timestamp) {
+          const previousPrice = cachedData ? cachedData.price : currentLiveData.price;
+          const tickChange = currentLiveData.price - previousPrice;
+          
+          cachedData = {
+            ...currentLiveData,
+            displayChange: tickChange
+          };
+          this._lastLiveData.set(symbol, cachedData);
+        }
       }
 
-      const liveData = currentLiveData || this._lastLiveData.get(symbol);
+      const liveData = cachedData;
       const staticData = staticInfo[symbol];
       const baseline = this.initialData.get(symbol)!;
       const isOn = activeSymbols.includes(symbol);
 
       const currentPrice = liveData ? liveData.price : baseline.price;
-      const change = currentPrice - baseline.price;
-      // If it hasn't moved but we assigned a fake isPositive sign for visual mock
-      let displayChange = change;
-      if (currentPrice === baseline.price) {
-        displayChange = 0; // mock change if no live data
-      }
+      
+      // Calculate change using our updated lastLiveData cache (tick-by-tick)
+      const displayChange = liveData?.displayChange || 0;
 
       const isPositive = displayChange >= 0;
-      const changePercent = baseline.price
-        ? (Math.abs(displayChange) / baseline.price) * 100
+      
+      const previousPrice = currentPrice - displayChange;
+      const changePercent = previousPrice
+        ? (Math.abs(displayChange) / previousPrice) * 100
         : 0;
 
       return {
